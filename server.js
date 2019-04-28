@@ -9,7 +9,7 @@ const port= process.env.PORT||3000
 const connection= require('./config/mysql_connect')
 
 
-//连接mysql
+//连接mysql0
 connection.connect((err)=>{
     if(err) throw  err
     console.log('mysql is sucess')
