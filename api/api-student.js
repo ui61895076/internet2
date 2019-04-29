@@ -12,16 +12,16 @@ const passport =require('passport')
 router.post('/register',(req,res)=>{
     let sql ='insert into students set ?'
     let sql2 =`select * from students where name = '${req.body.name}'`
-    let con={name:req.body.name,pwd:req.body.pwd,phoneNum:req.body.phoneNum,email:req.body.email}
+    let con={name:req.body.name,pwd:req.body.pwd,phoneNum:req.body.phoneNum,email:req.body.email,schoolName:req.body.schoolName,collageName:req.body.collageName,className:req.body.className}
     connection.query(sql2,(err,result)=>{
         if (err) throw err
 
        if(result.length!=0){
-           res.json({msg:'用户名已存在！'})
+           res.status(403).json({msg:'用户名已存在！'})
        }else {
            connection.query(sql,con,(err,result)=>{
                if (err) throw err
-               res.json({msg:'添加成功！',con})
+               res.json({msg:'添加成功',con:{name:req.body.name,phoneNum:req.body.phoneNum,email:req.body.email,schoolName:req.body.schoolName,collageName:req.body.collageName,className:req.body.className}})
            })
        }
     })
@@ -60,12 +60,14 @@ router.get('/ser_school_collage',(req,res)=>{ //教师注册，学生注册，�
           result.forEach(item=>{
               var obj ={}
              obj.label=item.schoolName
+              obj.value=item.schoolName
               obj.children=[]
               if(item.yx_name){
                   ary_yx_name=item.yx_name.split(',')
                   for(var i=0;i<ary_yx_name.length;i++){
                       let obj2={}
                       obj2.label=ary_yx_name[i]
+                      obj2.value=ary_yx_name[i]
                       obj.children.push(obj2)
                   }
               }
@@ -78,9 +80,17 @@ router.get('/ser_school_collage',(req,res)=>{ //教师注册，学生注册，�
 })
 
 router.post('/ser-class',(req,res)=>{//教师注册，学生注册，根据学校，院系选择对应的班级
-    let sql= ' select class_name from (select schoolName,yx_name,class_name from collage,class,school_name where collage.yx_id=school_name.yx_id  and collage.class_name_id=class.class_name_id and class.yx_id = school_name.yx_id) t where t.schoolName="南京师范大学" and t.yx_name ="计算机系"'
+let ary=[]
+    let sql= `select class_name from (select schoolName,yx_name,class_name from collage,class,school_name where collage.yx_id=school_name.yx_id  and collage.class_name_id=class.class_name_id and class.yx_id = school_name.yx_id) t where t.schoolName="${req.body.schoolName}" and t.yx_name = "${req.body.collageName}"`
     connection.query(sql,(err,result)=>{
-        res.json(result)
+        for(var i=0;i<result.length;i++){
+            var obj={}
+            obj.value=result[i].class_name;
+            obj.label=result[i].class_name;
+            ary.push(obj)
+        }
+
+        res.json(ary) //返回element-ui 级联菜单数据格式
     })
 })
 

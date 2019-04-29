@@ -60,12 +60,14 @@ router.get('/ser_school_collage',(req,res)=>{ //教师注册，学生注册，�
           result.forEach(item=>{
               var obj ={}
              obj.label=item.schoolName
+              obj.value=item.schoolName
               obj.children=[]
               if(item.yx_name){
                   ary_yx_name=item.yx_name.split(',')
                   for(var i=0;i<ary_yx_name.length;i++){
                       let obj2={}
                       obj2.label=ary_yx_name[i]
+                      obj2.value=ary_yx_name[i]
                       obj.children.push(obj2)
                   }
               }
