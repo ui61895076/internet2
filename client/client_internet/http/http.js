@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Loading,Message } from 'element-ui'
-import router from '../../../../../../vuePro/client/client/src/router'
+import router from '../src/router'
 //加载动画
 
 
@@ -21,9 +21,10 @@ function endLoading(){
 //请求拦截
 axios.interceptors.request.use(config=>{
     startLoading()
-    const token=localStorage.getItem('loginToken')
+    const token=localStorage.getItem('token');
     if(token){
         config.headers.Authorization=token
+
     }
     return config
 },error => {
@@ -43,11 +44,12 @@ axios.interceptors.response.use(res=>{
             message: 'token已经过期！',
             type: 'warning'
         });
-        localStorage.removeItem('loginToken')
-        router.push('/login')
+        localStorage.removeItem('token');//删除token
+        localStorage.removeItem('resetPhoneNum');//删除手机号
+        localStorage.removeItem('user_profil');//删除上一次用户登录的信息
+        router.push('/login')//跳转至登录页
     }
     return Promise.reject(error)
 })
-
-
+axios.defaults.baseURL = 'http://localhost:3000';
 export default axios
